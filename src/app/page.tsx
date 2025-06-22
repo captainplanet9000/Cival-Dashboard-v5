@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
+import { ModernTradingDashboard } from '@/components/dashboard/ModernTradingDashboard';
 
-// Force redirect to modern white shadcn dashboard (NOT dashboard-v2)
+// Direct implementation of the dashboard with your exact tabs
 export default function Home() {
-  redirect('/dashboard');
+  return <ModernTradingDashboard />;
 }

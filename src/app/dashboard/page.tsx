@@ -1,6 +1,6 @@
 /**
  * Main Dashboard Page
- * Modern trading dashboard with emerald/violet/amber design
+ * Dashboard with tabs: Dashboard, Trading, Agents, Farms, Goals, Vault, DeFi, Calendar, Advanced
  */
 
 import { ModernTradingDashboard } from '@/components/dashboard/ModernTradingDashboard'
