@@ -1,6 +1,6 @@
-import { ModernTradingDashboard } from '@/components/dashboard/ModernTradingDashboard';
+import { redirect } from 'next/navigation';
 
-// Direct implementation of the dashboard with your exact tabs
+// Redirect to the comprehensive dashboard with all services
 export default function Home() {
-  return <ModernTradingDashboard />;
+  redirect('/dashboard-v2');
 }

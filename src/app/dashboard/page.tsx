@@ -1,10 +1,6 @@
-/**
- * Main Dashboard Page
- * Dashboard with tabs: Dashboard, Trading, Agents, Farms, Goals, Vault, DeFi, Calendar, Advanced
- */
+import { redirect } from 'next/navigation';
 
-import { ModernTradingDashboard } from '@/components/dashboard/ModernTradingDashboard'
-
+// Redirect to the comprehensive dashboard with all services and advanced tab
 export default function DashboardPage() {
-  return <ModernTradingDashboard />
+  redirect('/dashboard-v2');
 }
