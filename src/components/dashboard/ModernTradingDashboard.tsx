@@ -26,7 +26,8 @@ import {
   Calendar,
   PieChart,
   Users,
-  Wallet
+  Wallet,
+  Vault
 } from 'lucide-react'
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -54,7 +55,7 @@ interface ChartData {
 }
 
 export function ModernTradingDashboard() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('dashboard')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalValue: 0,
@@ -109,12 +110,15 @@ export function ModernTradingDashboard() {
   const chartData = generateChartData()
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'portfolio', label: 'Portfolio', icon: PieChart },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'trading', label: 'Trading', icon: Activity },
     { id: 'agents', label: 'Agents', icon: Bot },
     { id: 'farms', label: 'Farms', icon: Target },
+    { id: 'goals', label: 'Goals', icon: Target },
+    { id: 'vault', label: 'Vault', icon: Vault },
+    { id: 'defi', label: 'DeFi', icon: Zap },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp }
+    { id: 'advanced', label: 'Advanced', icon: TrendingUp }
   ]
 
   const MetricCard = ({ title, value, change, changeType, icon: Icon, gradient }: {
@@ -377,7 +381,7 @@ export function ModernTradingDashboard() {
         {/* Desktop Tabs */}
         <div className="hidden lg:block mb-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-6 bg-white dark:bg-gray-800 border shadow-sm">
+            <TabsList className="grid w-full grid-cols-9 bg-white dark:bg-gray-800 border shadow-sm">
               {tabs.map(tab => (
                 <TabsTrigger 
                   key={tab.id} 
@@ -390,14 +394,14 @@ export function ModernTradingDashboard() {
               ))}
             </TabsList>
             <div className="mt-6">
-              <TabsContent value="overview" className="space-y-6">
+              <TabsContent value="dashboard" className="space-y-6">
                 <OverviewTab />
               </TabsContent>
-              <TabsContent value="portfolio">
+              <TabsContent value="trading">
                 <div className="text-center py-12">
-                  <PieChart className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-lg font-medium mb-2">Portfolio Management</h3>
-                  <p className="text-gray-500">Advanced portfolio tracking and analysis coming soon</p>
+                  <Activity className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">Trading Interface</h3>
+                  <p className="text-gray-500">Execute trades and manage orders</p>
                 </div>
               </TabsContent>
               <TabsContent value="agents">
@@ -414,6 +418,27 @@ export function ModernTradingDashboard() {
                   <p className="text-gray-500">Optimize your DeFi yield farming strategies</p>
                 </div>
               </TabsContent>
+              <TabsContent value="goals">
+                <div className="text-center py-12">
+                  <Target className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">Trading Goals</h3>
+                  <p className="text-gray-500">Set and track your trading objectives</p>
+                </div>
+              </TabsContent>
+              <TabsContent value="vault">
+                <div className="text-center py-12">
+                  <Vault className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">Vault Banking</h3>
+                  <p className="text-gray-500">Secure fund management and banking operations</p>
+                </div>
+              </TabsContent>
+              <TabsContent value="defi">
+                <div className="text-center py-12">
+                  <Zap className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">DeFi Operations</h3>
+                  <p className="text-gray-500">Decentralized finance protocols and strategies</p>
+                </div>
+              </TabsContent>
               <TabsContent value="calendar">
                 <TradingCalendar 
                   onDaySelect={(date) => {
@@ -422,9 +447,9 @@ export function ModernTradingDashboard() {
                   }}
                 />
               </TabsContent>
-              <TabsContent value="analytics">
+              <TabsContent value="advanced">
                 <div className="text-center py-12">
-                  <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-medium mb-2">Advanced Analytics</h3>
                   <p className="text-gray-500">Deep insights into your trading performance</p>
                 </div>
@@ -435,8 +460,15 @@ export function ModernTradingDashboard() {
 
         {/* Mobile Content */}
         <div className="lg:hidden">
-          {activeTab === 'overview' && <OverviewTab />}
-          {activeTab !== 'overview' && (
+          {activeTab === 'dashboard' && <OverviewTab />}
+          {activeTab === 'calendar' && (
+            <TradingCalendar 
+              onDaySelect={(date) => {
+                console.log('Selected date:', date)
+              }}
+            />
+          )}
+          {activeTab !== 'dashboard' && activeTab !== 'calendar' && (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 {tabs.find(t => t.id === activeTab)?.icon && 
