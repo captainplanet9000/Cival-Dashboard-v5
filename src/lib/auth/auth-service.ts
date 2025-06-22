@@ -52,7 +52,7 @@ class AuthenticationService {
         this.notifySessionListeners()
       }
 
-      // Listen for auth changes
+      // Listen for auth state changes
       this.supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
         console.log('Auth state changed:', event)
         
