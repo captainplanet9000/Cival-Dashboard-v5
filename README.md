@@ -1,4 +1,4 @@
-# Cival Dashboard - Advanced Algorithmic Trading Platform
+# Cival Dashboard - Advanced Algorithmic Trading Platform v2.0
 
 A comprehensive, production-ready algorithmic trading dashboard built with Next.js, featuring real-time market data, AI-powered strategies, paper trading, risk management, and MCP (Model Context Protocol) server integration.
 
