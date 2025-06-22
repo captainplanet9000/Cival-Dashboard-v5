@@ -8,9 +8,12 @@ export const createServerClient = () => {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key'
   
   // Handle build-time scenarios where credentials might be placeholders
-  const isValidCredentials = supabaseUrl !== 'https://placeholder.supabase.co' && 
+  const isValidCredentials = supabaseUrl && 
+                           supabaseUrl !== 'https://placeholder.supabase.co' && 
+                           supabaseAnonKey && 
                            supabaseAnonKey !== 'placeholder-anon-key' && 
-                           !supabaseAnonKey.includes('your_supabase_anon_key_here')
+                           !supabaseAnonKey.includes('your_supabase_anon_key_here') &&
+                           supabaseUrl.includes('supabase')
   
   // If credentials are invalid, return a mock client for build-time compatibility
   if (!isValidCredentials) {

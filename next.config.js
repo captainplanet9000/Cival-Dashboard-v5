@@ -18,6 +18,8 @@ const nextConfig = {
     TRADING_API_URL: process.env.TRADING_API_URL || 'http://localhost:3001',
     MCP_API_URL: process.env.MCP_API_URL || 'http://localhost:3000',
     VAULT_API_URL: process.env.VAULT_API_URL || 'http://localhost:3002',
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
   },
   async rewrites() {
     return [
