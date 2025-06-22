@@ -32,7 +32,7 @@ export class AgentDataService {
       return [];
     }
     
-    const fileIds = permissions.map(p => p.file_id);
+    const fileIds = permissions.map((p: any) => p.file_id);
     
     const { data: files, error: filesError } = await this.supabase
       .from('file_uploads')

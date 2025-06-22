@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@/utils/supabase/client'
-import { User, Session } from '@supabase/supabase-js'
+import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { Database } from '@/types/database.types'
 
 export interface AuthUser {
@@ -53,7 +53,7 @@ class AuthenticationService {
       }
 
       // Listen for auth changes
-      this.supabase.auth.onAuthStateChange((event, session) => {
+      this.supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
         console.log('Auth state changed:', event)
         
         if (session) {
