@@ -98,14 +98,17 @@ mockProfitData.daily_profits.forEach(day => {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type'); // 'daily', 'goals', 'sources', 'tax', 'metrics', 'distribution'
+    const typeParam = searchParams.get('type'); // 'daily', 'goals', 'sources', 'tax', 'metrics', 'distribution'
     const timeframe = searchParams.get('timeframe') || '30d';
     const goalId = searchParams.get('goal_id');
 
     // Try to get real profit data from backend first
     try {
       const profitResponse = await backendApi.getProfitTracking ? 
-        await backendApi.getProfitTracking(type, timeframe) : null;
+        await backendApi.getProfitTracking(
+          typeParam === null ? undefined : typeParam, // Convert null to undefined
+          timeframe
+        ) : null;
       
       if (profitResponse?.data) {
         return NextResponse.json({
@@ -120,41 +123,44 @@ export async function GET(request: NextRequest) {
     }
 
     // Fallback to mock data
-    let data = mockProfitData;
+    let responseData: Record<string, any>; // Declare with a more flexible type
 
-    // Filter by type if specified
-    if (type) {
-      switch (type) {
+    if (typeParam) {
+      switch (typeParam) {
         case 'daily':
-          data = { daily_profits: mockProfitData.daily_profits };
+          responseData = { daily_profits: mockProfitData.daily_profits };
           break;
         case 'goals':
           if (goalId) {
             const goal = mockProfitData.goals.find(g => g.id === goalId);
-            data = goal ? { goal } : { error: 'Goal not found' };
+            responseData = goal ? { goal } : { error: 'Goal not found' };
           } else {
-            data = { goals: mockProfitData.goals };
+            responseData = { goals: mockProfitData.goals };
           }
           break;
         case 'sources':
-          data = { profit_sources: mockProfitData.profit_sources };
+          responseData = { profit_sources: mockProfitData.profit_sources };
           break;
         case 'tax':
-          data = { tax_tracking: mockProfitData.tax_tracking };
+          responseData = { tax_tracking: mockProfitData.tax_tracking };
           break;
         case 'metrics':
-          data = { performance_metrics: mockProfitData.performance_metrics };
+          responseData = { performance_metrics: mockProfitData.performance_metrics };
           break;
         case 'distribution':
-          data = { profit_distribution: mockProfitData.profit_distribution };
+          responseData = { profit_distribution: mockProfitData.profit_distribution };
           break;
         default:
-          // Return all data
+          // If typeParam is specified but doesn't match known cases, return all.
+          responseData = mockProfitData;
           break;
       }
+    } else {
+      // No typeParam, return all mock data
+      responseData = mockProfitData;
     }
 
-    // Add summary statistics
+    // Add summary statistics (ensure this section is outside the if/else block for responseData)
     const summary = {
       total_realized_profit: mockProfitData.daily_profits.reduce((sum, day) => sum + day.realized_pnl, 0),
       total_unrealized_profit: mockProfitData.daily_profits.reduce((sum, day) => sum + day.unrealized_pnl, 0),
@@ -165,11 +171,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data,
+      data: responseData, // Use the correctly typed responseData
       summary,
       source: 'fallback',
       metadata: {
-        timeframe,
+        timeframe, // Ensure timeframe is defined in this scope; it is from searchParams earlier
         calculation_date: new Date().toISOString(),
         currency: 'USD',
         timezone: 'UTC'

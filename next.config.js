@@ -5,11 +5,11 @@ const nextConfig = {
   serverExternalPackages: ['ioredis'],
   typescript: {
     // Temporarily ignore build errors for deployment
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
     // Temporarily ignore ESLint errors for deployment
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   webpack: (config) => {
     config.resolve.fallback = {

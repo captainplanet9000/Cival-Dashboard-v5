@@ -111,7 +111,20 @@ export function AgentPaperTradingDashboard({ agentId, agentName }: AgentPaperTra
         positions,
         orders,
         performance,
-        alerts: portfolioSummary?.riskMetrics?.alerts || [],
+        alerts: (portfolioSummary?.riskMetrics?.alerts || []).map((alert: any): AgentPaperTradingAlert => ({
+          id: alert.id || `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          agent_id: agentId, // agentId is a prop of AgentPaperTradingDashboard
+          account_id: accounts && accounts.length > 0 && accounts[0] ? accounts[0].id : 'unknown_paper_account', // Use a valid account_id or default
+          alert_type: alert.alert_type || alert.type || 'market', // Prefer alert.alert_type, fallback to alert.type, then 'market'
+          severity: alert.severity || 'medium',
+          title: alert.title || (alert.message ? alert.message.substring(0, 50) : 'Untitled Alert'),
+          message: alert.message || 'No message content.',
+          triggered_at: alert.triggered_at ? new Date(alert.triggered_at) : new Date(),
+          acknowledged: typeof alert.acknowledged === 'boolean' ? alert.acknowledged : false,
+          auto_action_taken: alert.auto_action_taken,
+          related_position_id: alert.related_position_id,
+          related_order_id: alert.related_order_id,
+        })),
         decisions: [], // Would load from decision history
         portfolioHealth: portfolioSummary ? await portfolioManager.getPortfolioHealth() : null,
         riskMetrics: portfolioSummary?.riskMetrics || null

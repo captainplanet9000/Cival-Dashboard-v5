@@ -82,14 +82,18 @@ const mockAnalytics = {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type'); // 'usdt-dominance', 'sentiment', 'volatility', 'correlations', 'technical', 'onchain'
-    const timeframe = searchParams.get('timeframe') || '24h';
-    const symbol = searchParams.get('symbol');
+    const typeParam = searchParams.get('type'); // 'usdt-dominance', 'sentiment', 'volatility', 'correlations', 'technical', 'onchain'
+    const timeframe = searchParams.get('timeframe') || '24h'; // timeframe is already string due to || '24h'
+    const symbolParam = searchParams.get('symbol');
 
     // Try to get real analytics from backend first
     try {
       const analyticsResponse = await backendApi.getAnalytics ? 
-        await backendApi.getAnalytics(type, timeframe, symbol) : null;
+        await backendApi.getAnalytics(
+          typeParam === null ? undefined : typeParam,
+          timeframe,
+          symbolParam === null ? undefined : symbolParam
+        ) : null;
       
       if (analyticsResponse?.data) {
         return NextResponse.json({
@@ -104,41 +108,48 @@ export async function GET(request: NextRequest) {
     }
 
     // Fallback to mock data
-    let data = mockAnalytics;
+    let responseData: Record<string, any>; // Declare with a more flexible type
 
-    // Filter by type if specified
-    if (type) {
-      switch (type) {
+    if (typeParam) {
+      switch (typeParam) {
         case 'usdt-dominance':
-          data = { usdt_dominance: mockAnalytics.usdt_dominance };
+          responseData = { usdt_dominance: mockAnalytics.usdt_dominance };
           break;
         case 'sentiment':
-          data = { market_sentiment: mockAnalytics.market_sentiment };
+          responseData = { market_sentiment: mockAnalytics.market_sentiment };
           break;
         case 'volatility':
-          data = { volatility_analysis: mockAnalytics.volatility_analysis };
+          responseData = { volatility_analysis: mockAnalytics.volatility_analysis };
           break;
         case 'correlations':
-          data = { correlation_matrix: mockAnalytics.correlation_matrix };
+          responseData = { correlation_matrix: mockAnalytics.correlation_matrix };
           break;
         case 'technical':
-          data = { technical_indicators: mockAnalytics.technical_indicators };
+          responseData = { technical_indicators: mockAnalytics.technical_indicators };
           break;
         case 'onchain':
-          data = { on_chain_metrics: mockAnalytics.on_chain_metrics };
+          responseData = { on_chain_metrics: mockAnalytics.on_chain_metrics };
           break;
         default:
-          // Return all data
+          // If typeParam is specified but doesn't match known cases,
+          // it implies the user might expect a filter, but we don't have one.
+          // Returning all mock data might be confusing if a 'type' was passed.
+          // For now, let's return all if type is unknown, matching previous implicit behavior.
+          // A better approach might be to return an error for an unknown type.
+          responseData = mockAnalytics;
           break;
       }
+    } else {
+      // No typeParam, return all mock data
+      responseData = mockAnalytics;
     }
 
     return NextResponse.json({
       success: true,
-      data,
+      data: responseData, // Use the correctly typed responseData
       source: 'fallback',
       metadata: {
-        timeframe,
+        timeframe, // Ensure timeframe is defined in this scope; it is from searchParams earlier
         last_updated: new Date().toISOString(),
         data_sources: ['coingecko', 'alternative.me', 'glassnode', 'santiment'],
         update_frequency: '5 minutes'

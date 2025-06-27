@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { backendApi } from '@/lib/api/backend-client';
 
+interface PerformanceData {
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  total_trades?: number;
+  volatility?: number;
+  // Add other fields if you know them, otherwise keep it minimal
+}
+
 // Real portfolio data from backend
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +25,7 @@ export async function GET(request: NextRequest) {
       if (portfolioResponse.data) {
         const now = new Date();
         const portfolio = portfolioResponse.data;
-        const performance = performanceResponse.data || {};
+        const perfData: PerformanceData = performanceResponse?.data || {};
         
         const portfolioData = {
           totalValue: portfolio.total_equity || 0,
@@ -29,12 +37,11 @@ export async function GET(request: NextRequest) {
       
           // Performance metrics from backend
           metrics: {
-            sharpeRatio: performance.sharpe_ratio || 0,
-            maxDrawdown: performance.max_drawdown || 0,
-            winRate: ((performance.total_trades || 0) > 0 ? 
-              (performance.total_trades - (performance.total_trades * 0.25)) / performance.total_trades * 100 : 0),
-            volatility: performance.volatility || 0,
-            sortino: performance.sharpe_ratio * 1.2 || 0, // Estimate if not available
+            sharpeRatio: perfData.sharpe_ratio || 0,
+            maxDrawdown: perfData.max_drawdown || 0,
+            winRate: (perfData.total_trades || 0) > 0 ? 75.0 : 0, // Simplified original calculation
+            volatility: perfData.volatility || 0,
+            sortino: (perfData.sharpe_ratio || 0) * 1.2,
             beta: 0.8, // Default beta value
           },
       
